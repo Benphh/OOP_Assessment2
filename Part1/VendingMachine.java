@@ -1,182 +1,132 @@
+
 import java.util.ArrayList;
+import java.util.Arrays;
 
+/**
+ * Class to create a vending machine
+ * @author David Lim
+ */
 public class VendingMachine {
-    
     private String owner;
-    private int maxItems;
-    private double totalMoney;
-    private static double userMoney;
+    private int maxItems, itemCount;
+    private VendItem[] stock;
+    private double totalMoney, userMoney;
     private Status vmStatus;
-    static final int MAX = 2;
-    VendingMachine newMachine = new VendingMachine("Ben Harkin", 7);
-	static VendItem stock[] = new VendItem[MAX];
-	static int count = 0;
+    private ArrayList<Integer> coins;
 
-    public static void main(String[] args) {
-        
-        
-        // Titles for Menu
-        String title = "Vending Machine";
-        String options[] = { "List Items", "Insert Coins", "View Credit", "Select Item", "Quit" };
-
-        Menu regMenu = new Menu(title, options);
-        
-        
-        int choice = regMenu.getChoice();
-
-        while (choice != 5) { // i.e. "Quit"
-            processChoice(choice);
-            choice = regMenu.getChoice();
-        }
-        System.out.println("Finished - Goodbye!");
-    }
-
-    public static void processChoice(int choice) {
-        VendItem newItem = new VendItem("Coke", 3.2, 10);
-        stock[count] = newItem;
-        count++;
-        VendItem newItem1 = new VendItem("Fanta Lemon", 3.2, 10);
-        stock[count] = newItem1;
-		count++;
-        switch (choice) {
-            case 1:
-                listItems();
-                break;
-            case 2:
-                insertCoin();
-                break;
-            case 3:
-                getCredit();
-                break;
-            case 4:
-                purchaseItem();
-                break;
-            default:
-                System.out.println("Error");
-        }
-    }
-
+    /**
+     * Constructor for the VendingMachine object
+     * @param owner - The name of the owner as a string
+     * @param maxItems - The maximum number of items the vending machine can store
+     */
     public VendingMachine(String owner, int maxItems) {
-
+        this.owner = owner;
+        this.maxItems = maxItems;
+        stock = new VendItem[maxItems];
+        coins = new ArrayList<>(Arrays.asList(5, 10, 20, 50, 100, 200));
+        setStatus(Status.SERVICE_MODE);
     }
 
+    /**
+     * Getter for userMoney
+     * @return - user money as a double
+     */
+    public double getUserMoney() {
+        return userMoney;
+    }
+
+    /**
+     * Method to return all the vending machine information as a string
+     * @return - The vending machine information as a string
+     */
     public String getSystemInfo() {
-        return "fds";
+        return "lhfv";
     }
 
+    /**
+     * Method to reset all the instance variables of the vending machine
+     */
     public void reset() {
-        // should reintitialise a VendingMachine instance
-    }
-
-    public static void purchaseItem() {
-        System.out.println("List of All Items");
-        System.out.println("++++++++++++++++++++\n");
-        String itemsList[] = new String[MAX];
-        int purchaseChoice; int countItems = 0;
         
-        if (count==0) {
-			System.out.println("\tNo items available.\n");
-		}
-		else {
-			for(int index = 1; index<=count; index++) {
-				VendItem s = stock[index-1];
-                System.out.println(index+". " + s.getName());
-                itemsList[countItems] = s.getName();
-                countItems++;
-            
-                
-			}
-			System.out.println();
-        }
-        Menu purchase = new Menu("Select an item to purchase", itemsList);
-        purchase.display();
-        purchaseChoice = purchase.getChoice();
-        if(userMoney >= stock[purchaseChoice-1].getPrice()) {
-            System.out.println("You have succesfully bought " + itemsList[purchaseChoice]);
-        } else{
-            System.out.println("You haven't enough money, please enter more coins");
-            //write a function to calc how much is needed
-        }
-        
-        //Need to add functions:
-            //check if you have enough money
-            //take money from credit
-            //change money in till
-            //reduce quantity by one
-
-
     }
 
-
-
-    
-
-    public void setStatus(Status status) {
-
+    /**
+     * Method to allow the user to purchase an item from the vending machine
+     * @param vendItemIndex - The index of the item to be purchased by the user  as an integer
+     * @return - String to proved the user with information about their purchase
+     */
+    public String purchaseItem(int vendItemIndex) {
+        return "efnl";
     }
 
-
-
-
-    ///*** WORKING METHODS***/
-    //Option 1 - LIST ITEMS
-    public static void listItems(){
-        System.out.println("List of All Items");
-		System.out.println("++++++++++++++++++++\n");
-		if (count==0) {
-			System.out.println("\tNo items available.\n");
-		}
-		else {
-			for(int index = 1; index<=count; index++) {
-				VendItem s = stock[index-1];
-				System.out.println(index+". " + s.getName() + ", Quantity Available: " + s.getQty());
-			}
-			System.out.println();
-		}
-
-    }
-
-    //Option2 - INSERT COINS
-    public static double insertCoin() {
-        String coinslist[] = { "10p", "20p", "50p", "£1", "£2" };
-        Menu coins = new Menu("Select a Coin", coinslist);
-        coins.display();
-        int choice = coins.getChoice();
-        while (choice < 1 || choice > coinslist.length) {
-            choice = coins.getChoice();
-        }
-        double coin_value = 0;
-
-        switch (choice) {
-            case 1:
-                coin_value = 0.1;
-                break;
-            case 2:
-                coin_value = 0.2;
-                break;
-            case 3:
-                coin_value = 0.5;
-                break;
-            case 4:
-                coin_value = 1;
-                break;
-            case 5:
-                coin_value = 2;
-                break;
-            default:
-        }
-        userMoney += coin_value;
-        System.out.println("You have entered: £" + coin_value);
-        System.out.println("Total Credit: " + userMoney);
-
-		return coin_value;
-
-    }
-    //Option 3 - VIEW CREDIT
-    public static void getCredit(){
-        System.out.println("Total Credit: " +"£" + userMoney);
-    }
-    public boolean addNewItem(VendItem[] item) {
+    /**
+     * Helper method to return change to the user once a purchase is made
+     * @return - Whether the change was returned successfully as a boolean
+     */
+    private boolean returnChange() {
         return true;
     }
- }
+
+    /**
+     * Method to update the value of userMoney dependent on the value of the coin inserted
+     * @param value - The value of the coin in pennies as an integer
+     * @return - Whether the coin was valid and userMoney was updated as a boolean
+     */
+    public boolean insertCoin(int value) {
+        return true;
+    }
+
+    /**
+     * Method to add items to the vending machine
+     * @param item - The item as VendItem
+     * @return - Whether the item was added to the vending machine
+     */
+    public boolean addNewItem(VendItem item) {
+        if (itemCount < maxItems) {
+            stock[itemCount] = item;
+            itemCount++;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Method to return the items in the vending machine as a list
+     * @return - The list of items as a list
+     */
+    public String[] listItems() {
+        String itemsList[] = new String[itemCount];
+        System.out.println("List of All Items");
+		System.out.println("++++++++++++++++++++\n");
+		if (itemCount==0) {
+			System.out.println("\tNo items available.\n");
+		}
+		else {
+			for(int index = 0; index<=itemCount; index++) {
+                
+                VendItem s = stock[index];
+                for(int i=0;i<itemCount;i++){
+                    System.out.println(stock[i].toString());
+                }
+                //itemsList[index] = ((index+1)+". " + s.getName() + ",Price: "+ s.getUnitPrice()+ ", Quantity Available: " + s.getQtyAvailable());
+                
+			}
+            System.out.println();
+
+            
+        }
+        for(int i =0; i<itemCount;i++){
+            System.out.println(itemsList[i]);
+        }
+        return itemsList;
+    }
+
+    /**
+     * Setter for the status of the vending machine
+     * @param vmStatus - The status of the vending machine of type Status
+     */
+    public void setStatus(Status vmStatus) {
+        this.vmStatus = vmStatus;
+    }
+}
