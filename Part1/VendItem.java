@@ -1,9 +1,16 @@
-public class VendItem implements Vendible{
+
+
+/**
+ * Class to create products placed within the vending machine
+ * @author David Lim
+ */
+public class VendItem implements Vendible {
     private int itemID;
     private static int nextID = 1;
     private String name;
     private double unitPrice;
     private int qtyAvailable;
+
     /**
      * Constructor for products within the vending machine
      * @param name - The name of the product
@@ -105,5 +112,4 @@ public class VendItem implements Vendible{
         return nextID++;
     }
 
-    
 }

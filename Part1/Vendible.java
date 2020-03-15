@@ -1,3 +1,4 @@
+
 /**
  * Interface provided for all vendible items
  * @author drlim

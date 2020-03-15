@@ -1,10 +1,9 @@
 
-
 import java.util.Scanner;
 
 /**
  * This class represents a console-based menu
- * @Ben Harkin
+ * @Paul Sage, Ben Harkin
  * @version V1.0
  *
  */
