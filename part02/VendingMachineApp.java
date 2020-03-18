@@ -59,6 +59,19 @@ import java.util.Scanner;
                 case 5:
                     System.out.println("Goodbye!");
                     break;
+                //secret menu option
+                case 6:
+                    System.out.print("Enter administrator password: ");
+                    Scanner password = new Scanner(System.in);
+                    String passwordAttempt = password.nextLine();
+                    if(passwordAttempt.equals("password123")){
+                        System.out.println("Welcome to menu");
+                        machine.administratorMenu();
+                    }else{
+                        System.out.println("Wrong password. Goodbye!");
+                    }
+                    break;
+
                 default:
                     System.out.println("Please enter a valid option.");
                     System.out.println();

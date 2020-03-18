@@ -212,6 +212,37 @@ public class VendingMachine {
         }
 
     }
+    /**
+     * Method to allow administrator to access their menu
+     * @param none
+     * @return none
+     */
+    public void administratorMenu(){
+        String optionList[] = { "Output all Data","Reset Machine", "Switch Status", "Add new Item", "Restock Existing Item"};
+        Menu adminMenu = new Menu("Select an option", optionList);
+        adminMenu.display();
+        int choice = adminMenu.getChoice();
+        while (choice < 1 || choice > optionList.length) {
+            choice = adminMenu.getChoice();
+        }
+        switch (choice) {
+            case 1:
+                System.out.println(getSystemInfo());
+                break;
+            case 2:
+                reset();
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            case 5:
+                break;
+            default:
+        }
+        
+
+    }
 
     /**
      * Setter for the status of the vending machine
