@@ -11,6 +11,7 @@ public class VendingMachine {
     private VendItem[] stock;
     private double totalMoney, userMoney;
     private Status vmStatus;
+    private String itemList[] = new String[10]; //10 is the max
 
 
     /**
@@ -45,9 +46,10 @@ public class VendingMachine {
      * @return - The vending machine information as a string
      */
     public String getSystemInfo() {
+        listItems();
         return String.format("Owner: %s\nNumber of maximum items: %d\nNumber of current items: %d\nCurrent items " +
                 "stocked: %s\nTotal money in machine: %.2f\nUser money in machine: %.2f\nStatus of machine: %s", owner,
-                maxItems, itemCount, machine.listItems(), totalMoney, userMoney, vmStatus.getStatus());
+                maxItems, itemCount, Arrays.toString(itemList), totalMoney, userMoney, vmStatus.getStatus());
     }
 
     /**
@@ -179,7 +181,22 @@ public class VendingMachine {
      * @return - The list of items as a list
      */
     public String[] listItems() {
-        String itemList[] = new String[itemCount];
+        
+		if (itemCount==0) {
+			System.out.println("\tNo items available.\n");
+		}
+		else {
+			for(int index = 1; index<=itemCount; index++) {
+                VendItem s = stock[index-1];
+                itemList[index-1]=(s.getName());
+			}
+            System.out.println();
+            
+        }
+        return itemList;
+
+    }
+    public void displayItems(){
         System.out.println("List of All Items");
 		System.out.println("++++++++++++++++++++\n");
 		if (itemCount==0) {
@@ -188,13 +205,43 @@ public class VendingMachine {
 		else {
 			for(int index = 1; index<=itemCount; index++) {
                 VendItem s = stock[index-1];
-                itemList[index-1]=(index+". " + s.getName() + ", Price: "+ s.getUnitPrice()+", Quantity Available: " + s.getQtyAvailable());
 				System.out.println(index+". " + s.getName() + ", Price: "+ s.getUnitPrice()+", Quantity Available: " + s.getQtyAvailable());
 			}
             System.out.println();
             
         }
-        return itemList;
+
+    }
+    /**
+     * Method to allow administrator to access their menu
+     * @param none
+     * @return none
+     */
+    public void administratorMenu(){
+        String optionList[] = { "Output all Data","Reset Machine", "Switch Status", "Add new Item", "Restock Existing Item"};
+        Menu adminMenu = new Menu("Select an option", optionList);
+        adminMenu.display();
+        int choice = adminMenu.getChoice();
+        while (choice < 1 || choice > optionList.length) {
+            choice = adminMenu.getChoice();
+        }
+        switch (choice) {
+            case 1:
+                System.out.println(getSystemInfo());
+                break;
+            case 2:
+                reset();
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            case 5:
+                break;
+            default:
+        }
+        
+
     }
 
     /**

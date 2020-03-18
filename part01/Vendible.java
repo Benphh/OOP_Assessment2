@@ -1,7 +1,7 @@
 
 /**
  * Interface provided for all vendible items
- * @author drlim
+ * @author Ben Harkin
  */
 public interface Vendible {
     String deliver();

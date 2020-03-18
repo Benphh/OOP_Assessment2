@@ -1,7 +1,7 @@
 
 /**
  * Enumerator class to provide different statuses for the vending machine
- * @author David Lim
+ * @author Ben Harkin
  */
 public enum Status {
     VENDING_MODE("VENDING_MODE"), SERVICE_MODE("SERVICE_MODE");
