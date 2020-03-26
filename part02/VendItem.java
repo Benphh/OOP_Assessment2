@@ -1,8 +1,8 @@
 
 
 /**
- * Class to create products placed within the vending machine
- * @author David Lim
+ * Class to create products placed within the vending machine(VendingMachine.java)
+ * @author Ben Harkin
  */
 public class VendItem implements Vendible {
     private int itemID;

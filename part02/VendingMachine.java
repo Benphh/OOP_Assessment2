@@ -1,9 +1,10 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Scanner;
 
 /**
  * Class to create a vending machine
- * @author David Lim
+ * @author Ben Harkin
  */
 public class VendingMachine {
     private String owner;
@@ -12,6 +13,15 @@ public class VendingMachine {
     private double totalMoney, userMoney;
     private Status vmStatus;
     private String itemList[] = new String[10]; //10 is the max
+
+    //***FLOAT***//
+    //These are the coins - they start with a certain amount - like any till would
+    private int numOf5coins = 10;
+    private int numOf10coins = 10;
+    private int numOf20coins = 10;
+    private int numOf50coins = 10;
+    private int numOf1coins = 10;
+    private int numOf2coins = 10;
 
 
     /**
@@ -26,7 +36,7 @@ public class VendingMachine {
         setStatus(Status.SERVICE_MODE);
     }
     /**
-     * Takes userMoney andf prints it in a consumer friendly way
+     * Takes userMoney and prints it in a consumer friendly way
      * @return - nothing. Prints a string with the userMoney included
      */
     public void getCredit(){
@@ -46,7 +56,6 @@ public class VendingMachine {
      * @return - The vending machine information as a string
      */
     public String getSystemInfo() {
-        listItems();
         return String.format("Owner: %s\nNumber of maximum items: %d\nNumber of current items: %d\nCurrent items " +
                 "stocked: %s\nTotal money in machine: %.2f\nUser money in machine: %.2f\nStatus of machine: %s", owner,
                 maxItems, itemCount, Arrays.toString(itemList), totalMoney, userMoney, vmStatus.getStatus());
@@ -65,32 +74,39 @@ public class VendingMachine {
 
     /**
      * Method to allow the user to purchase an item from the vending machine
-     * @param vendItemIndex - The index of the item to be purchased by the user  as an integer
-     * @return - String to proved the user with information about their purchase
+     * @param vendItemIndex - The index of the item to be purchased by the user
+     * @return - output - String to proved the user with information about their purchase
      */
     public String purchaseItem(int vendItemIndex) {
-        String res;
+        String output;
         if (vmStatus == Status.VENDING_MODE) {
             if (vendItemIndex >= 0 && vendItemIndex < maxItems && stock[vendItemIndex] != null &&
                     stock[vendItemIndex].getQtyAvailable() > 0) {
-                if (userMoney >= stock[vendItemIndex].getUnitPrice()) {
-                    res = stock[vendItemIndex].deliver();
-                    if (res != null) {
+                if (userMoney >= stock[vendItemIndex].getUnitPrice()  && checkCoins(userMoney-stock[vendItemIndex].getUnitPrice())) {
+                    output = stock[vendItemIndex].deliver();
+                  if(checkCoins(userMoney-stock[vendItemIndex].getUnitPrice())){
+
+                  
+                    if (output != null) {
                         totalMoney += stock[vendItemIndex].getUnitPrice();
                         userMoney -= stock[vendItemIndex].getUnitPrice();
+                        getCoins(userMoney);
                     } else {
-                        res = String.format("Sorry %s is currently out of stock", stock[vendItemIndex].getName());
+                        output = String.format("Sorry %s is currently out of stock", stock[vendItemIndex].getName());
                     }
                 } else {
-                    res = String.format("Sorry you have insufficient funds to purchase %s", stock[vendItemIndex].getName());
+                    output = String.format("You have insufficient funds to purchase %s", stock[vendItemIndex].getName());
+                }}
+                else {
+                    output = String.format("apoligies, the machine has insufficient coins to allow you to purchase %s", stock[vendItemIndex].getName());
                 }
             } else {
-                res = "Sorry the item you selected is not available";
+                output = "The item you selected is not available";
             }
         } else {
-            res = "Sorry the vending machine is not currently in operation";
+            output = "Sorry the vending machine is not currently in operation";
         }
-        res += String.format("\n£%.2f will be returned", userMoney);
+        output += String.format("\n£%.2f will be returned", userMoney);
         returnChange();
 
         setStatus(Status.SERVICE_MODE);
@@ -101,7 +117,7 @@ public class VendingMachine {
             }
         }
 
-        return res;
+        return output;
     }
 
     /**
@@ -135,21 +151,27 @@ public class VendingMachine {
         switch (choice) {
             case 1:
                 coin_value = 0.05;
+                numOf5coins++;
                 break;
             case 2:
                 coin_value = 0.1;
+                numOf10coins++;
                 break;
             case 3:
                 coin_value = 0.2;
+                numOf20coins++;
                 break;
             case 4:
                 coin_value = 0.5;
+                numOf50coins++;
                 break;
             case 5:
                 coin_value = 1;
+                numOf1coins++;
                 break;
             case 6:
                 coin_value = 2;
+                numOf2coins++;
                 break;
             default:
         }
@@ -159,6 +181,153 @@ public class VendingMachine {
 
 		return coin_value;
 
+    }
+
+    /**
+     * Method to allow administrator to access their menu
+     */
+    public void administratorMenu(){
+        String optionList[] = { "Output all Data","Reset Machine", "Switch Status", "Add new Item", "Restock Existing Item", "Check Coin Stock"};
+        Menu adminMenu = new Menu("Select an option", optionList);
+        adminMenu.display();
+        int choice = adminMenu.getChoice();
+        while (choice < 1 || choice > optionList.length) {
+            choice = adminMenu.getChoice();
+        }
+        switch (choice) {
+            case 1:
+                System.out.println(getSystemInfo());
+                break;
+            case 2:
+                System.out.println("Resetting System");
+                reset();
+                break;
+            case 3:
+                System.out.println("Swapping System Mode");
+                swapStatus();
+                break;
+            case 4:
+                addItem();
+                break;
+            case 5:
+                displayItems();
+                System.out.println("What item do you want to restock?");
+                
+                Scanner restockInput = new Scanner(System.in);
+                int restockChoice = restockInput.nextInt();
+                restock(restockChoice-1);
+                System.out.println();
+                break;
+            case 6:
+                displayCoins();
+                break;
+            default:
+        }
+    }
+    /**
+     * Method to restock items in the vending machine
+     */
+    public void addItem() {
+        System.out.println("***ADD NEW ITEM***");
+        System.out.println("What is the name for the item?");
+        Scanner newItemNameInput = new Scanner(System.in);
+        String newItemName = newItemNameInput.nextLine();
+        System.out.println("What is the price of "+ newItemName+"?");
+        Scanner newItemPriceInput = new Scanner(System.in);
+        double newItemPrice = newItemPriceInput.nextDouble();
+        System.out.println("What is the quantity of the item?");
+        Scanner newItemQtyInput = new Scanner(System.in);
+        int newItemQty = newItemQtyInput.nextInt();
+        addNewItem(new VendItem(newItemName, newItemPrice, newItemQty));
+    }
+
+    /**
+     * Method to restock items in the vending machine
+     * @param itemValue - the number corresponding to the item the user wants to restock
+     */
+    public void restock(int itemValue) {
+        System.out.println("Current stock count:"+stock[itemValue].getQtyAvailable()+" What do you want to restock to?");
+        Scanner restockValueInput = new Scanner(System.in);
+        int restockValue = restockValueInput.nextInt();
+        stock[itemValue].restock(restockValue);
+    }
+
+    /**
+     * Method to display the different coins in the machine
+     */
+    public void displayCoins() {
+        System.out.println("Number of 5p coins: "+numOf5coins);
+        System.out.println("Number of 10p coins: "+numOf10coins);
+        System.out.println("Number of 20p coins: "+numOf20coins);
+        System.out.println("Number of 50p coins: "+numOf50coins);
+        System.out.println("Number of £1 coins: "+numOf1coins);
+        System.out.println("Number of £2 coins: "+numOf2coins);
+        
+    }
+
+    /**
+     * Method to check if the machine has enough coins
+     * @return - True/False depending on if the machine has the coins to give out change
+     */
+    public boolean checkCoins(double change) {
+        if(change>2.0 && numOf2coins >0){
+            change -= 2.0;
+        } 
+        else if(change>1.0 && numOf1coins >0){
+            change -= 1.0;
+        }
+        else if(change>0.5 && numOf50coins >0){
+            change -= 0.5;
+        }
+        else if(change>0.2 && numOf20coins >0){
+            change -= 0.2;
+        }
+        else if(change>0.1 && numOf10coins >0){
+            change -= 0.1;
+        }
+        else if(change>0.05 && numOf10coins >0){
+            change -= 0.1;
+        }
+        else{
+            return false;
+        }
+        return true;
+        
+    }
+    /**
+     * Method to change the amount of coins depending on the change given out
+     */
+    public void getCoins(double change) {
+        while(change>=2.0 && numOf2coins >0){
+            change -= 2.0;
+            numOf2coins--;
+        } 
+        while(change>=1.0 && numOf1coins >0){
+            change -= 0.9999999999999999; //for some reason 1 doesn't work      
+            numOf1coins--;
+            System.out.println(change);
+        }
+        while(change>=0.5 && numOf50coins >0){
+            change -= 0.5;
+            numOf50coins--;
+        }
+        while(change>=0.2 && numOf20coins >0){
+            change -= 0.2;
+            numOf20coins--;
+            System.out.println(change);
+        }
+        while(change>=0.1 && numOf10coins >0){
+            change -= 0.1;
+            numOf10coins--;
+            System.out.println(change);
+        }
+        while(change>=0.05 && numOf10coins >0){
+            change -= 0.1;
+            numOf5coins--;
+        }
+        
+
+        
     }
 
     /**
@@ -212,37 +381,6 @@ public class VendingMachine {
         }
 
     }
-    /**
-     * Method to allow administrator to access their menu
-     * @param none
-     * @return none
-     */
-    public void administratorMenu(){
-        String optionList[] = { "Output all Data","Reset Machine", "Switch Status", "Add new Item", "Restock Existing Item"};
-        Menu adminMenu = new Menu("Select an option", optionList);
-        adminMenu.display();
-        int choice = adminMenu.getChoice();
-        while (choice < 1 || choice > optionList.length) {
-            choice = adminMenu.getChoice();
-        }
-        switch (choice) {
-            case 1:
-                System.out.println(getSystemInfo());
-                break;
-            case 2:
-                reset();
-                break;
-            case 3:
-                break;
-            case 4:
-                break;
-            case 5:
-                break;
-            default:
-        }
-        
-
-    }
 
     /**
      * Setter for the status of the vending machine
@@ -250,5 +388,19 @@ public class VendingMachine {
      */
     public void setStatus(Status vmStatus) {
         this.vmStatus = vmStatus;
+        if(vmStatus == Status.SERVICE_MODE){
+            vmStatus = Status.VENDING_MODE;
+        }else{
+            vmStatus = Status.SERVICE_MODE;
+        }
+    }
+
+    public Status swapStatus(){
+        if(vmStatus == Status.SERVICE_MODE){
+            vmStatus = Status.VENDING_MODE;
+        }else{
+            vmStatus = Status.SERVICE_MODE;
+        }
+        return vmStatus;
     }
 }
